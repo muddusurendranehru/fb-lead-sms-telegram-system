@@ -8,7 +8,9 @@ const cors = require('cors');
 const path = require('path');
 const twilio = require('twilio');
 const { createClient } = require('@supabase/supabase-js');
-
+const TELEGRAM_BOT_TOKEN = '8214864800:AAEtYsHUOv07OkQcP-szHCN-gY8yeVkTPGQ';
+const TELEGRAM_GROUP_ID = '-4849748858'; 
+const PERSONAL_CHAT_ID = '5892544777';
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
