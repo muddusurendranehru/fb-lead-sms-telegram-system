@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOMA Healthcare - Free Diabetes Consultation</title>
+    <title>HOMA Healthcare - Free Consultation</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -25,7 +25,7 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 500px;
+            max-width: 400px;
             width: 100%;
             overflow: hidden;
         }
@@ -38,33 +38,27 @@
         }
         
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 10px;
         }
         
         .header p {
-            font-size: 16px;
             opacity: 0.9;
         }
         
         .doctor-info {
             background: rgba(255,255,255,0.1);
-            margin: 20px 0;
+            margin: 15px 0;
             padding: 15px;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .doctor-info h3 {
-            margin-bottom: 5px;
         }
         
         .form-container {
-            padding: 40px;
+            padding: 30px;
         }
         
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         label {
@@ -72,20 +66,9 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #333;
-            font-size: 14px;
         }
         
-        .required {
-            color: #e74c3c;
-        }
-        
-        .optional {
-            color: #7f8c8d;
-            font-weight: 400;
-            font-size: 12px;
-        }
-        
-        input, select, textarea {
+        input {
             width: 100%;
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -94,14 +77,9 @@
             transition: border-color 0.3s;
         }
         
-        input:focus, select:focus, textarea:focus {
+        input:focus {
             outline: none;
             border-color: #4CAF50;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 80px;
         }
         
         .phone-input {
@@ -110,7 +88,7 @@
         }
         
         .country-code {
-            width: 80px;
+            width: 70px;
             background: #f5f5f5;
             color: #666;
             font-weight: bold;
@@ -119,14 +97,14 @@
         .submit-btn {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            padding: 18px 40px;
+            padding: 18px;
             border: none;
             border-radius: 8px;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
             width: 100%;
+            transition: transform 0.2s;
         }
         
         .submit-btn:hover {
@@ -137,36 +115,6 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
-        }
-        
-        .features {
-            background: #f8f9fa;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        
-        .features h3 {
-            color: #4CAF50;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .feature-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 14px;
-        }
-        
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .feature-item::before {
-            content: "✅";
-            font-size: 16px;
         }
         
         .success-message {
@@ -208,11 +156,26 @@
             100% { transform: rotate(360deg); }
         }
         
-        .language-note {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-            font-style: italic;
+        .features {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .features h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .feature-list {
+            display: flex;
+            justify-content: space-around;
+            font-size: 14px;
+        }
+        
+        .feature-item::before {
+            content: "✅ ";
         }
         
         @media (max-width: 600px) {
@@ -224,16 +187,13 @@
                 padding: 20px;
             }
             
-            .header h1 {
-                font-size: 24px;
-            }
-            
             .form-container {
                 padding: 20px;
             }
             
             .feature-list {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                gap: 5px;
             }
         }
     </style>
@@ -241,80 +201,56 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏥 HOMA Healthcare Center</h1>
-            <p>Free Diabetes Consultation & Health Checkup</p>
+            <h1>🏥 HOMA Healthcare</h1>
+            <p>Free Diabetes Consultation</p>
             <div class="doctor-info">
                 <h3>👨‍⚕️ Dr. Nehru</h3>
-                <p>MD, DM - Diabetes Specialist</p>
-                <p>15+ Years Experience</p>
+                <p>Diabetes Specialist • 15+ Years</p>
             </div>
         </div>
         
         <div class="form-container">
             <div class="success-message" id="successMessage">
-                <h3>✅ Registration Successful!</h3>
-                <p>Dr. Nehru will call you within 30 minutes. Please keep your phone nearby.</p>
-                <p><strong>You will receive SMS and WhatsApp confirmation shortly.</strong></p>
+                <h3>✅ Success!</h3>
+                <p>Dr. Nehru will call you within 30 minutes.</p>
+                <p><strong>Check your SMS and WhatsApp!</strong></p>
             </div>
             
             <div class="error-message" id="errorMessage">
-                <h3>❌ Registration Failed</h3>
-                <p id="errorText">Please try again or call us directly.</p>
+                <h3>❌ Error</h3>
+                <p id="errorText">Please try again.</p>
             </div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Registering your consultation...</p>
+                <p>Registering...</p>
             </div>
             
             <form id="patientForm">
-                <!-- REQUIRED FIELDS -->
                 <div class="form-group">
-                    <label for="name">Full Name / పూర్తి పేరు <span class="required">*</span></label>
-                    <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your name">
                 </div>
                 
                 <div class="form-group">
-                    <label for="phone">Mobile Number / మొబైల్ నంబర్ <span class="required">*</span></label>
+                    <label for="phone">Mobile Number</label>
                     <div class="phone-input">
                         <input type="text" class="country-code" value="+91" readonly>
-                        <input type="tel" id="phone" name="phone" required placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
+                        <input type="tel" id="phone" name="phone" required placeholder="9876543210" maxlength="10">
                     </div>
-                </div>
-                
-                <!-- OPTIONAL FIELDS -->
-                <div class="form-group">
-                    <label for="preferredLanguage">Preferred Language / భాష ఎంచుకోండి <span class="optional">(optional)</span></label>
-                    <select id="preferredLanguage" name="preferredLanguage">
-                        <option value="english">English</option>
-                        <option value="telugu">తెలుగు (Telugu)</option>
-                    </select>
-                    <div class="language-note">
-                        Messages will be sent in your preferred language
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="symptoms">Health Concerns / ఆరోగ్య సమస్యలు <span class="optional">(optional)</span></label>
-                    <textarea id="symptoms" name="symptoms" placeholder="Describe your symptoms: frequent urination, increased thirst, fatigue, etc. (Optional)"></textarea>
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn">
-                    📞 Get Free Consultation Call
+                    📞 Get Free Call
                 </button>
             </form>
             
             <div class="features">
-                <h3>What You Get / మీకు లభించేవి</h3>
+                <h3>What You Get</h3>
                 <div class="feature-list">
                     <div class="feature-item">Free Consultation</div>
-                    <div class="feature-item">Expert Diagnosis</div>
-                    <div class="feature-item">Treatment Plan</div>
-                    <div class="feature-item">Follow-up Support</div>
+                    <div class="feature-item">Expert Care</div>
                     <div class="feature-item">WhatsApp Updates</div>
-                    <div class="feature-item">SMS Reminders</div>
-                    <div class="feature-item">Telugu Support</div>
-                    <div class="feature-item">15+ Years Experience</div>
                 </div>
             </div>
         </div>
@@ -329,7 +265,7 @@
             const successMessage = document.getElementById('successMessage');
             const errorMessage = document.getElementById('errorMessage');
             
-            // Hide previous messages
+            // Hide messages
             successMessage.style.display = 'none';
             errorMessage.style.display = 'none';
             
@@ -337,15 +273,15 @@
             loading.style.display = 'block';
             submitBtn.disabled = true;
             
-            // Get form data
+            // Get data
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
             
-            // Validate phone number
+            // Validate phone
             if (data.phone.length !== 10 || !/^\d{10}$/.test(data.phone)) {
                 loading.style.display = 'none';
                 errorMessage.style.display = 'block';
-                document.getElementById('errorText').textContent = 'Please enter a valid 10-digit mobile number';
+                document.getElementById('errorText').textContent = 'Enter valid 10-digit mobile number';
                 submitBtn.disabled = false;
                 return;
             }
@@ -354,7 +290,7 @@
             if (!data.name || data.name.trim().length < 2) {
                 loading.style.display = 'none';
                 errorMessage.style.display = 'block';
-                document.getElementById('errorText').textContent = 'Please enter your full name';
+                document.getElementById('errorText').textContent = 'Enter your name';
                 submitBtn.disabled = false;
                 return;
             }
@@ -362,9 +298,7 @@
             try {
                 const response = await fetch('/api/register-patient', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 
@@ -375,57 +309,38 @@
                 if (result.success) {
                     successMessage.style.display = 'block';
                     e.target.reset();
-                    
-                    // Reset to default language
-                    document.getElementById('preferredLanguage').value = 'english';
-                    
-                    // Scroll to success message
                     successMessage.scrollIntoView({ behavior: 'smooth' });
                     
-                    // Update success message based on communication status
-                    if (result.communicationStatus.whatsapp === 'sent') {
+                    // Update message based on what was sent
+                    if (result.whatsapp && result.sms) {
                         successMessage.innerHTML = `
-                            <h3>✅ Registration Successful!</h3>
-                            <p>Dr. Nehru will call you within 30 minutes. Please keep your phone nearby.</p>
-                            <p><strong>✅ SMS Sent</strong> | <strong>✅ WhatsApp Sent</strong></p>
-                            <p>You'll receive a professional WhatsApp message with appointment details!</p>
+                            <h3>✅ Success!</h3>
+                            <p>Dr. Nehru will call you within 30 minutes.</p>
+                            <p><strong>✅ SMS Sent ✅ WhatsApp Sent</strong></p>
                         `;
-                    } else {
+                    } else if (result.sms) {
                         successMessage.innerHTML = `
-                            <h3>✅ Registration Successful!</h3>
-                            <p>Dr. Nehru will call you within 30 minutes. Please keep your phone nearby.</p>
-                            <p><strong>✅ SMS Sent</strong> | <strong>⚠️ WhatsApp Backup</strong></p>
-                            <p>You'll receive SMS confirmation shortly!</p>
+                            <h3>✅ Success!</h3>
+                            <p>Dr. Nehru will call you within 30 minutes.</p>
+                            <p><strong>✅ SMS Sent</strong></p>
                         `;
                     }
                 } else {
                     errorMessage.style.display = 'block';
-                    document.getElementById('errorText').textContent = result.error || 'Registration failed. Please try again.';
+                    document.getElementById('errorText').textContent = result.error || 'Registration failed';
                 }
             } catch (error) {
                 loading.style.display = 'none';
                 errorMessage.style.display = 'block';
-                document.getElementById('errorText').textContent = 'Network error. Please check your connection and try again.';
-                console.error('Error:', error);
+                document.getElementById('errorText').textContent = 'Network error. Try again.';
             }
             
             submitBtn.disabled = false;
         });
         
-        // Phone number formatting
+        // Phone validation
         document.getElementById('phone').addEventListener('input', function(e) {
-            // Remove non-digits
             e.target.value = e.target.value.replace(/\D/g, '');
-        });
-        
-        // Name validation
-        document.getElementById('name').addEventListener('input', function(e) {
-            const name = e.target.value.trim();
-            if (name.length < 2) {
-                e.target.setCustomValidity('Name must be at least 2 characters');
-            } else {
-                e.target.setCustomValidity('');
-            }
         });
     </script>
 </body>
