@@ -1,6 +1,7 @@
 // ============================================================================
-// MINIMAL index.js - HOMA Healthcare System (NAME + PHONE ONLY)
+// FIXED MINIMAL index.js - HOMA Healthcare System (NAME + PHONE ONLY)
 // Dr. Nehru's Diabetes Clinic - Simple Lead Capture
+// FIXED: Uses correct database column names
 // ============================================================================
 
 const express = require('express');
@@ -126,7 +127,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Register patient - MINIMAL
+// Register patient - FIXED DATABASE COLUMNS
 app.post('/api/register-patient', async (req, res) => {
     const { name, phone } = req.body;
     
@@ -148,13 +149,17 @@ app.post('/api/register-patient', async (req, res) => {
             });
         }
 
-        // Save to database
+        // ✅ FIXED: Save to database with correct column names
         const { data, error } = await supabase
             .from('patients')
-            .insert([{ name, phone: cleanPhone }])
+            .insert([{ first_name: name, phone: cleanPhone }])
             .select();
         
-        if (error) throw error;
+        if (error) {
+            console.error('Database error:', error);
+            throw error;
+        }
+        
         const patientId = data[0].id;
 
         // Send messages
@@ -187,7 +192,7 @@ ${whatsappResult.success ? '✅' : '❌'} WhatsApp
         });
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Registration error:', error);
         res.status(500).json({
             success: false,
             error: error.message
@@ -197,7 +202,33 @@ ${whatsappResult.success ? '✅' : '❌'} WhatsApp
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok' });
+    res.json({ 
+        status: 'ok',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Get patients (admin)
+app.get('/api/patients', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('patients')
+            .select('*')
+            .order('id', { ascending: false });
+        
+        if (error) throw error;
+        
+        res.json({
+            success: true,
+            patients: data
+        });
+    } catch (error) {
+        console.error('Error fetching patients:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
 });
 
 // ============================================================================
@@ -208,5 +239,21 @@ app.listen(PORT, () => {
     console.log(`🚀 HOMA Healthcare Server running on port ${PORT}`);
     console.log(`📱 WhatsApp: ${process.env.TWILIO_WHATSAPP_FROM ? 'ON' : 'OFF'}`);
     console.log(`📧 Telegram: ${process.env.TELEGRAM_BOT_TOKEN ? 'ON' : 'OFF'}`);
+    console.log(`💾 Database: ${process.env.SUPABASE_URL ? 'ON' : 'OFF'}`);
     console.log(`🌐 Visit: fb-lead-sms-telegram-system.onrender.com`);
 });
+
+// ============================================================================
+// ENVIRONMENT VARIABLES REQUIRED:
+// ============================================================================
+/*
+TWILIO_ACCOUNT_SID=AC1cc2ad09edc74744d48f448e25b9005d
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_PHONE_NUMBER=+1XXXXXXXXXX
+TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+SUPABASE_URL=https://oztndjdowoewkbeznjvd.supabase.co
+SUPABASE_ANON_KEY=your_supabase_key
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+TELEGRAM_CHAT_ID=-1002557630252
+PORT=3000
+*/
