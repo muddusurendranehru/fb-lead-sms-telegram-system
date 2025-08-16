@@ -75,6 +75,16 @@
             font-size: 14px;
         }
         
+        .required {
+            color: #e74c3c;
+        }
+        
+        .optional {
+            color: #7f8c8d;
+            font-weight: 400;
+            font-size: 12px;
+        }
+        
         input, select, textarea {
             width: 100%;
             padding: 15px;
@@ -91,7 +101,7 @@
         
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
         }
         
         .phone-input {
@@ -258,28 +268,24 @@
             </div>
             
             <form id="patientForm">
+                <!-- REQUIRED FIELDS -->
                 <div class="form-group">
-                    <label for="name">Full Name / పూర్తి పేరు *</label>
+                    <label for="name">Full Name / పూర్తి పేరు <span class="required">*</span></label>
                     <input type="text" id="name" name="name" required placeholder="Enter your full name">
                 </div>
                 
                 <div class="form-group">
-                    <label for="phone">Mobile Number / మొబైల్ నంబర్ *</label>
+                    <label for="phone">Mobile Number / మొబైల్ నంబర్ <span class="required">*</span></label>
                     <div class="phone-input">
                         <input type="text" class="country-code" value="+91" readonly>
                         <input type="tel" id="phone" name="phone" required placeholder="9876543210" maxlength="10" pattern="[0-9]{10}">
                     </div>
                 </div>
                 
+                <!-- OPTIONAL FIELDS -->
                 <div class="form-group">
-                    <label for="age">Age / వయస్సు *</label>
-                    <input type="number" id="age" name="age" required min="18" max="100" placeholder="35">
-                </div>
-                
-                <div class="form-group">
-                    <label for="preferredLanguage">Preferred Language / భాష ఎంచుకోండి *</label>
-                    <select id="preferredLanguage" name="preferredLanguage" required>
-                        <option value="">Select Language / భాష ఎంచుకోండి</option>
+                    <label for="preferredLanguage">Preferred Language / భాష ఎంచుకోండి <span class="optional">(optional)</span></label>
+                    <select id="preferredLanguage" name="preferredLanguage">
                         <option value="english">English</option>
                         <option value="telugu">తెలుగు (Telugu)</option>
                     </select>
@@ -289,8 +295,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="symptoms">Health Concerns / ఆరోగ్య సమస్యలు *</label>
-                    <textarea id="symptoms" name="symptoms" required placeholder="Describe your symptoms: frequent urination, increased thirst, fatigue, etc."></textarea>
+                    <label for="symptoms">Health Concerns / ఆరోగ్య సమస్యలు <span class="optional">(optional)</span></label>
+                    <textarea id="symptoms" name="symptoms" placeholder="Describe your symptoms: frequent urination, increased thirst, fatigue, etc. (Optional)"></textarea>
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn">
@@ -344,6 +350,15 @@
                 return;
             }
             
+            // Validate name
+            if (!data.name || data.name.trim().length < 2) {
+                loading.style.display = 'none';
+                errorMessage.style.display = 'block';
+                document.getElementById('errorText').textContent = 'Please enter your full name';
+                submitBtn.disabled = false;
+                return;
+            }
+            
             try {
                 const response = await fetch('/api/register-patient', {
                     method: 'POST',
@@ -360,6 +375,9 @@
                 if (result.success) {
                     successMessage.style.display = 'block';
                     e.target.reset();
+                    
+                    // Reset to default language
+                    document.getElementById('preferredLanguage').value = 'english';
                     
                     // Scroll to success message
                     successMessage.scrollIntoView({ behavior: 'smooth' });
@@ -400,13 +418,11 @@
             e.target.value = e.target.value.replace(/\D/g, '');
         });
         
-        // Age validation
-        document.getElementById('age').addEventListener('input', function(e) {
-            const age = parseInt(e.target.value);
-            if (age < 18) {
-                e.target.setCustomValidity('Age must be 18 or above');
-            } else if (age > 100) {
-                e.target.setCustomValidity('Please enter a valid age');
+        // Name validation
+        document.getElementById('name').addEventListener('input', function(e) {
+            const name = e.target.value.trim();
+            if (name.length < 2) {
+                e.target.setCustomValidity('Name must be at least 2 characters');
             } else {
                 e.target.setCustomValidity('');
             }
