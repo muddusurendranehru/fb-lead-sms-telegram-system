@@ -1,5 +1,5 @@
 // ============================================================================
-// COMPLETE NEW index.js - HOMA Healthcare System
+// COMPLETE NEW index.js - HOMA Healthcare System (FIXED FOR RENDER)
 // Dr. Nehru's Diabetes Clinic - Lead Automation with WhatsApp Integration
 // ============================================================================
 
@@ -8,7 +8,7 @@ const cors = require('cors');
 const path = require('path');
 const twilio = require('twilio');
 const { createClient } = require('@supabase/supabase-js');
-const fetch = require('node-fetch');
+// REMOVED: const fetch = require('node-fetch'); - Using built-in fetch in Node.js 24+
 
 // Initialize Express app
 const app = express();
@@ -238,7 +238,7 @@ async function sendWhatsAppMessage(phoneNumber, templateType, language, patientN
 }
 
 // ============================================================================
-// TELEGRAM MESSAGE FUNCTION
+// TELEGRAM MESSAGE FUNCTION (USING BUILT-IN FETCH)
 // ============================================================================
 
 async function sendTelegramMessage(message) {
@@ -250,7 +250,7 @@ async function sendTelegramMessage(message) {
     try {
         const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
         
-        await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -262,7 +262,11 @@ async function sendTelegramMessage(message) {
             })
         });
         
-        console.log('✅ Telegram notification sent');
+        if (response.ok) {
+            console.log('✅ Telegram notification sent');
+        } else {
+            console.error('❌ Telegram API error:', await response.text());
+        }
     } catch (error) {
         console.error('❌ Telegram error:', error);
     }
@@ -490,7 +494,7 @@ app.listen(PORT, () => {
     console.log(`📱 WhatsApp: ${process.env.TWILIO_WHATSAPP_FROM ? 'Enabled' : 'Disabled (SMS only)'}`);
     console.log(`📧 Telegram: ${process.env.TELEGRAM_BOT_TOKEN ? 'Enabled' : 'Disabled'}`);
     console.log(`💾 Database: ${process.env.SUPABASE_URL ? 'Connected' : 'Not configured'}`);
-    console.log(`🌐 Visit: http://localhost:${PORT}`);
+    console.log(`🌐 Visit: fb-lead-sms-telegram-system.onrender.com`);
 });
 
 // ============================================================================
