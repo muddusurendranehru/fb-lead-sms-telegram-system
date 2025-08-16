@@ -1,16 +1,48 @@
 {
-  "name": "fb-lead-sms-telegram-system",
+  "name": "homa-healthcare-lead-automation",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "HOMA Healthcare - Facebook Lead Capture with SMS & Telegram Automation for Diabetes Clinic",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "npm install",
+    "test": "echo \"No tests specified\" && exit 0"
   },
+  "keywords": [
+    "healthcare",
+    "diabetes",
+    "facebook-leads",
+    "sms-automation",
+    "telegram-bot",
+    "patient-management",
+    "medical-clinic",
+    "lead-capture"
+  ],
+  "author": "Dr. Nehru's Healthcare Clinic",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "@supabase/supabase-js": "^2.38.0",
-    "twilio": "^4.19.0",
-    "node-telegram-bot-api": "^0.64.0",
-    "dotenv": "^16.3.1"
-  }
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "@supabase/supabase-js": "^2.38.4",
+    "node-telegram-bot-api": "^0.63.0",
+    "twilio": "^4.19.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muddusurendranehru/fb-lead-sms-telegram-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/muddusurendranehru/fb-lead-sms-telegram-system/issues"
+  },
+  "homepage": "https://github.com/muddusurendranehru/fb-lead-sms-telegram-system#readme"
 }
