@@ -1,6 +1,6 @@
 // ============================================================================
-// MINIMAL SCHEMA index.js - HOMA Healthcare System (BASIC FIELDS ONLY)
-// Dr. Nehru's Diabetes Clinic - Works with existing database schema
+// MINIMAL index.js - HOMA Healthcare System (NAME + PHONE ONLY)
+// Dr. Nehru's Diabetes Clinic - Simple Lead Capture
 // ============================================================================
 
 const express = require('express');
@@ -29,91 +29,24 @@ const supabase = createClient(
 );
 
 // ============================================================================
-// WHATSAPP TEMPLATES (ENGLISH & TELUGU)
+// SIMPLE MESSAGE TEMPLATES
 // ============================================================================
 
-const whatsappTemplates = {
-    confirmation: {
-        telugu: (name) => `🏥 *HOMA Healthcare Center*
-డాక్టర్ నెహ్రూ - డయాబెటిస్ స్పెషలిస్ట్
+const smsMessage = (name) => `Hello ${name}, your consultation request received. Dr. Nehru will call you shortly. HOMA Healthcare`;
 
-నమస్కారం ${name} గారు,
-
-✅ *మీ ఆరోగ్య సలహా అభ్యర్థన అందుకున్నాము*
-
-👨‍⚕️ *డాక్టర్:* డాక్టర్ నెహ్రూ (MD, DM డయాబెటిస్)
-⏰ *కాల్ సమయం:* 30 నిమిషాల్లో
-📍 *క్లినిక్:* HOMA Healthcare Center
-📞 *హెల్ప్‌లైన్:* +91-XXXXXXXXXX
-
-📋 *మీ చెకప్ కోసం:*
-• ఖాళీ కడుపుతో రండి (12 గంటలు)
-• పాత రిపోర్ట్‌లు తీసుకురండి
-• మందుల జాబితా సిద్ధం చేసుకోండి
-
-⚠️ *ముఖ్యమైన గమనిక:*
-ఇది సాధారణ సమాచారం మాత్రమే. తీవ్రమైన లక్షణాలకు వెంటనే డాక్టర్‌ని సంప్రదించండి లేదా 102కి కాల్ చేయండి.
-
-🌐 *ఆన్‌లైన్:* fb-lead-sms-telegram-system.onrender.com
-
-*HOMA Healthcare - మీ నమ్మకమైన ఆరోగ్య భాగస్వామి* 💚`,
-
-        english: (name) => `🏥 *HOMA Healthcare Center*
+const whatsappMessage = (name) => `🏥 *HOMA Healthcare Center*
 Dr. Nehru - Diabetes Specialist
 
 Hello ${name},
 
-✅ *Your health consultation received*
+✅ Your consultation request received
+👨‍⚕️ Dr. Nehru will call you within 30 minutes
+📞 Helpline: +91-XXXXXXXXXX
 
-👨‍⚕️ *Doctor:* Dr. Nehru (MD, DM Diabetes)
-⏰ *Call time:* Within 30 minutes
-📍 *Clinic:* HOMA Healthcare Center
-📞 *Helpline:* +91-XXXXXXXXXX
-
-📋 *For your checkup:*
-• Come fasting (12 hours)
-• Bring previous reports
-• Prepare medication list
-
-⚠️ *Important Notice:*
-This is for general information only. For serious symptoms, consult doctor immediately or dial 102.
-
-🌐 *Online:* fb-lead-sms-telegram-system.onrender.com
-
-*HOMA Healthcare - Your Trusted Health Partner* 💚`
-    },
-
-    followUp: {
-        telugu: (name) => `🔔 *HOMA Healthcare - ఫాలో అప్*
-
-${name} గారు, మా కాల్ వచ్చిందా?
-
-📞 రాకపోతే, దయచేసి Reply చేయండి:
-• "కాల్ చేయండి" - వెంటనే కాల్ కోసం
-• "సమయం ఇవ్వండి" - మీకు సౌకర్యవంతమైన సమయం చెప్పండి
-
-📞 *సహాయం:* +91-XXXXXXXXXX
-🏥 *HOMA Healthcare Center*
-
-*మీ ఆరోగ్యమే మా ప్రాధాన్యత* 💚`,
-
-        english: (name) => `🔔 *HOMA Healthcare - Follow Up*
-
-Hi ${name}, did you receive our call?
-
-📞 If not, please reply:
-• "CALL ME" - for immediate callback
-• "TIME" - to schedule convenient time
-
-📞 *Support:* +91-XXXXXXXXXX
-🏥 *HOMA Healthcare Center*
-
-*Your health is our priority* 💚`
-    }
-};
+*HOMA Healthcare - Your Health Partner* 💚`;
 
 // ============================================================================
-// SMS MESSAGE FUNCTION
+// SMS FUNCTION
 // ============================================================================
 
 async function sendSMSMessage(phoneNumber, message) {
@@ -125,77 +58,52 @@ async function sendSMSMessage(phoneNumber, message) {
         });
         
         console.log(`✅ SMS sent to ${phoneNumber}:`, response.sid);
-        return { success: true, messageId: response.sid };
+        return { success: true };
     } catch (error) {
         console.error('❌ SMS error:', error);
-        return { success: false, error: error.message };
+        return { success: false };
     }
 }
 
 // ============================================================================
-// WHATSAPP MESSAGE FUNCTION
+// WHATSAPP FUNCTION
 // ============================================================================
 
-async function sendWhatsAppMessage(phoneNumber, templateType, language, patientName) {
-    // Safety check - only run if WhatsApp is enabled
+async function sendWhatsAppMessage(phoneNumber, patientName) {
     if (!process.env.TWILIO_WHATSAPP_FROM) {
-        console.log('📱 WhatsApp not configured, continuing with SMS only...');
-        return { success: false, reason: 'not_configured' };
+        console.log('📱 WhatsApp not configured');
+        return { success: false };
     }
 
     try {
-        // Clean and format phone number
-        const cleanPhone = phoneNumber.replace(/^\+?91/, '');
-        const whatsappNumber = `whatsapp:+91${cleanPhone}`;
-        
-        // Get the appropriate message template
-        const message = whatsappTemplates[templateType][language](patientName);
-        
-        // Send WhatsApp message via Twilio
         const response = await client.messages.create({
             from: process.env.TWILIO_WHATSAPP_FROM,
-            to: whatsappNumber,
-            body: message
+            to: `whatsapp:+91${phoneNumber}`,
+            body: whatsappMessage(patientName)
         });
         
         console.log(`✅ WhatsApp sent to ${phoneNumber}:`, response.sid);
-        
-        return {
-            success: true,
-            messageId: response.sid,
-            service: 'twilio_whatsapp',
-            cost: 0.10
-        };
+        return { success: true };
         
     } catch (error) {
-        console.error('❌ WhatsApp error (SMS backup will work):', error);
-        
-        return {
-            success: false,
-            error: error.message,
-            fallback: 'sms_working'
-        };
+        console.error('❌ WhatsApp error:', error);
+        return { success: false };
     }
 }
 
 // ============================================================================
-// TELEGRAM MESSAGE FUNCTION
+// TELEGRAM FUNCTION
 // ============================================================================
 
 async function sendTelegramMessage(message) {
-    if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) {
-        console.log('Telegram not configured');
-        return;
-    }
+    if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) return;
 
     try {
         const url = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
         
-        const response = await fetch(url, {
+        await fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 chat_id: process.env.TELEGRAM_CHAT_ID,
                 text: message,
@@ -203,143 +111,83 @@ async function sendTelegramMessage(message) {
             })
         });
         
-        if (response.ok) {
-            console.log('✅ Telegram notification sent');
-        } else {
-            console.error('❌ Telegram API error:', await response.text());
-        }
+        console.log('✅ Telegram sent');
     } catch (error) {
         console.error('❌ Telegram error:', error);
     }
 }
 
 // ============================================================================
-// FOLLOW-UP SCHEDULER
-// ============================================================================
-
-function scheduleWhatsAppFollowUp(phoneNumber, language, patientName, delayHours = 2) {
-    if (!process.env.TWILIO_WHATSAPP_FROM) return;
-    
-    setTimeout(async () => {
-        try {
-            await sendWhatsAppMessage(phoneNumber, 'followUp', language, patientName);
-            console.log(`📱 Follow-up WhatsApp sent to ${patientName}`);
-        } catch (error) {
-            console.error('Follow-up WhatsApp failed:', error);
-        }
-    }, delayHours * 60 * 60 * 1000);
-}
-
-// ============================================================================
 // ROUTES
 // ============================================================================
 
-// Serve the main HTML form
+// Serve form
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Patient registration endpoint - MINIMAL DATABASE FIELDS
+// Register patient - MINIMAL
 app.post('/api/register-patient', async (req, res) => {
-    const { name, phone, symptoms, preferredLanguage = 'english' } = req.body;
+    const { name, phone } = req.body;
     
     try {
-        // Only validate required fields: name and phone
+        // Validate
         if (!name || !phone) {
             return res.status(400).json({
                 success: false,
-                error: 'Name and phone number are required'
+                error: 'Name and phone required'
             });
         }
 
-        // Clean phone number
-        const cleanPhone = phone.replace(/^\+?91/, '').replace(/\D/g, '');
-        
+        // Clean phone
+        const cleanPhone = phone.replace(/\D/g, '');
         if (cleanPhone.length !== 10) {
             return res.status(400).json({
                 success: false,
-                error: 'Invalid phone number. Please enter 10-digit mobile number'
+                error: 'Invalid phone number'
             });
         }
 
-        // Create language note for symptoms field
-        const symptomsWithLanguage = symptoms ? 
-            `${symptoms} [Language: ${preferredLanguage}]` : 
-            `[Language: ${preferredLanguage}]`;
-
-        // Save to database - ONLY BASIC FIELDS THAT EXIST
-        const patientData = {
-            name,
-            phone: cleanPhone,
-            symptoms: symptomsWithLanguage  // Include language preference in symptoms field
-        };
-
-        console.log('Saving patient data:', patientData);
-
+        // Save to database
         const { data, error } = await supabase
             .from('patients')
-            .insert([patientData])
+            .insert([{ name, phone: cleanPhone }])
             .select();
         
-        if (error) {
-            console.error('Supabase error:', error);
-            throw new Error('Database error: ' + error.message);
-        }
-        
+        if (error) throw error;
         const patientId = data[0].id;
 
-        // Send SMS
-        const smsMessage = preferredLanguage === 'telugu' 
-            ? `నమస్కారం ${name} గారు, మీ డయాబెటిస్ సలహా అభ్యర్థన అందుకున్నాము. డాక్టర్ నెహ్రూ త్వరలోనే మీకు కాల్ చేస్తారు. HOMA Healthcare - +91-XXXXXXXXXX`
-            : `Hello ${name}, your diabetes consultation request has been received. Dr. Nehru will call you shortly. HOMA Healthcare - +91-XXXXXXXXXX`;
-        
-        const smsResult = await sendSMSMessage(cleanPhone, smsMessage);
+        // Send messages
+        const smsResult = await sendSMSMessage(cleanPhone, smsMessage(name));
+        const whatsappResult = await sendWhatsAppMessage(cleanPhone, name);
 
-        // Send WhatsApp message
-        const whatsappResult = await sendWhatsAppMessage(cleanPhone, 'confirmation', preferredLanguage, name);
+        // Notify staff
+        const telegramMsg = `🏥 *New Patient*
 
-        // Send Telegram notification to staff
-        const telegramMessage = `🏥 *New Patient - HOMA Healthcare*
+👤 *Name:* ${name}
+📞 *Phone:* +91${cleanPhone}
+⏰ *Time:* ${new Date().toLocaleString('en-IN')}
 
-👤 *Patient:* ${name}
-📞 *Mobile:* +91${cleanPhone}
-🔍 *Symptoms:* ${symptoms || 'Not specified'}
-🗣️ *Language:* ${preferredLanguage}
-⏰ *Registration:* ${new Date().toLocaleString('en-IN')}
-
-📱 *Message Status:*
+📱 *Status:*
 ${smsResult.success ? '✅' : '❌'} SMS
-${whatsappResult.success ? '✅' : '⚠️'} WhatsApp ${whatsappResult.success ? '(sent)' : '(SMS backup active)'}
+${whatsappResult.success ? '✅' : '❌'} WhatsApp
 
-💰 *Communication Cost:* ₹${whatsappResult.success ? '8' : '0.50'} (${whatsappResult.success ? 'WhatsApp' : 'SMS only'})
+🎯 *Action:* Call ${name} now!
+📋 *ID:* ${patientId}`;
 
-🎯 *Action:* Please call ${name} within 30 minutes!
-📋 *Patient ID:* ${patientId}
+        await sendTelegramMessage(telegramMsg);
 
-${whatsappResult.success ? '📱 *WhatsApp Active* - Patient received professional message!' : '📱 *WhatsApp Failed* - SMS backup working fine'}`;
-
-        await sendTelegramMessage(telegramMessage);
-
-        // Schedule follow-up WhatsApp (only if first message succeeded)
-        if (whatsappResult.success) {
-            scheduleWhatsAppFollowUp(cleanPhone, preferredLanguage, name, 2);
-        }
-
-        // Success response
+        // Response
         res.json({
             success: true,
-            message: 'Patient registered successfully',
+            message: 'Registration successful',
             patientId: patientId,
-            communicationStatus: {
-                sms: smsResult.success ? 'sent' : 'failed',
-                whatsapp: whatsappResult.success ? 'sent' : 'fallback_to_sms',
-                whatsappService: whatsappResult.service || 'not_available'
-            },
-            followUpScheduled: whatsappResult.success
+            sms: smsResult.success,
+            whatsapp: whatsappResult.success
         });
 
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('Error:', error);
         res.status(500).json({
             success: false,
             error: error.message
@@ -347,67 +195,18 @@ ${whatsappResult.success ? '📱 *WhatsApp Active* - Patient received profession
     }
 });
 
-// Get all patients (admin endpoint)
-app.get('/api/patients', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('patients')
-            .select('*')
-            .order('id', { ascending: false });
-        
-        if (error) throw error;
-        
-        res.json({
-            success: true,
-            patients: data
-        });
-    } catch (error) {
-        console.error('Error fetching patients:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
-    }
-});
-
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
-    res.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        services: {
-            sms: !!process.env.TWILIO_PHONE_NUMBER,
-            whatsapp: !!process.env.TWILIO_WHATSAPP_FROM,
-            telegram: !!process.env.TELEGRAM_BOT_TOKEN,
-            database: !!process.env.SUPABASE_URL
-        }
-    });
+    res.json({ status: 'ok' });
 });
 
 // ============================================================================
-// SERVER STARTUP
+// START SERVER
 // ============================================================================
 
 app.listen(PORT, () => {
     console.log(`🚀 HOMA Healthcare Server running on port ${PORT}`);
-    console.log(`📱 WhatsApp: ${process.env.TWILIO_WHATSAPP_FROM ? 'Enabled' : 'Disabled (SMS only)'}`);
-    console.log(`📧 Telegram: ${process.env.TELEGRAM_BOT_TOKEN ? 'Enabled' : 'Disabled'}`);
-    console.log(`💾 Database: ${process.env.SUPABASE_URL ? 'Connected' : 'Not configured'}`);
+    console.log(`📱 WhatsApp: ${process.env.TWILIO_WHATSAPP_FROM ? 'ON' : 'OFF'}`);
+    console.log(`📧 Telegram: ${process.env.TELEGRAM_BOT_TOKEN ? 'ON' : 'OFF'}`);
     console.log(`🌐 Visit: fb-lead-sms-telegram-system.onrender.com`);
 });
-
-// ============================================================================
-// ENVIRONMENT VARIABLES REQUIRED:
-// ============================================================================
-/*
-TWILIO_ACCOUNT_SID=AC1cc2ad09edc74744d48f448e25b9005d
-TWILIO_AUTH_TOKEN=your_auth_token
-TWILIO_PHONE_NUMBER=+1XXXXXXXXXX
-TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-SUPABASE_URL=https://oztndjdowoewkbeznjvd.supabase.co
-SUPABASE_ANON_KEY=your_supabase_key
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-TELEGRAM_CHAT_ID=-1002557630252
-PORT=3000
-*/
-*/
