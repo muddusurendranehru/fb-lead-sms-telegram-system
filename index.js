@@ -1,6 +1,6 @@
 // ============================================================================
-// SIMPLIFIED index.js - HOMA Healthcare System (NAME & PHONE ONLY REQUIRED)
-// Dr. Nehru's Diabetes Clinic - Lead Automation with WhatsApp Integration
+// MINIMAL SCHEMA index.js - HOMA Healthcare System (BASIC FIELDS ONLY)
+// Dr. Nehru's Diabetes Clinic - Works with existing database schema
 // ============================================================================
 
 const express = require('express');
@@ -92,9 +92,6 @@ ${name} గారు, మా కాల్ వచ్చిందా?
 • "కాల్ చేయండి" - వెంటనే కాల్ కోసం
 • "సమయం ఇవ్వండి" - మీకు సౌకర్యవంతమైన సమయం చెప్పండి
 
-⚠️ *అత్యవసర పరిస్థితిలో:*
-వెంటనే 102కి కాల్ చేయండి లేదా సమీప హాస్పిటల్‌కి వెళ్లండి
-
 📞 *సహాయం:* +91-XXXXXXXXXX
 🏥 *HOMA Healthcare Center*
 
@@ -107,9 +104,6 @@ Hi ${name}, did you receive our call?
 📞 If not, please reply:
 • "CALL ME" - for immediate callback
 • "TIME" - to schedule convenient time
-
-⚠️ *For emergency:*
-Immediately dial 102 or visit nearest hospital
 
 📞 *Support:* +91-XXXXXXXXXX
 🏥 *HOMA Healthcare Center*
@@ -245,7 +239,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Patient registration endpoint - SIMPLIFIED
+// Patient registration endpoint - MINIMAL DATABASE FIELDS
 app.post('/api/register-patient', async (req, res) => {
     const { name, phone, symptoms, preferredLanguage = 'english' } = req.body;
     
@@ -268,20 +262,19 @@ app.post('/api/register-patient', async (req, res) => {
             });
         }
 
-        // Save patient to Supabase - MINIMAL FIELDS
+        // Create language note for symptoms field
+        const symptomsWithLanguage = symptoms ? 
+            `${symptoms} [Language: ${preferredLanguage}]` : 
+            `[Language: ${preferredLanguage}]`;
+
+        // Save to database - ONLY BASIC FIELDS THAT EXIST
         const patientData = {
             name,
             phone: cleanPhone,
-            preferred_language: preferredLanguage,
-            registration_time: new Date().toISOString(),
-            source: 'facebook_ad',
-            status: 'new'
+            symptoms: symptomsWithLanguage  // Include language preference in symptoms field
         };
 
-        // Add optional fields if provided
-        if (symptoms) {
-            patientData.symptoms = symptoms;
-        }
+        console.log('Saving patient data:', patientData);
 
         const { data, error } = await supabase
             .from('patients')
@@ -360,7 +353,7 @@ app.get('/api/patients', async (req, res) => {
         const { data, error } = await supabase
             .from('patients')
             .select('*')
-            .order('registration_time', { ascending: false });
+            .order('id', { ascending: false });
         
         if (error) throw error;
         
@@ -416,4 +409,5 @@ SUPABASE_ANON_KEY=your_supabase_key
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 TELEGRAM_CHAT_ID=-1002557630252
 PORT=3000
+*/
 */
