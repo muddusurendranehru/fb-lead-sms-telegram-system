@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homa Health Care - Diabetes Program Dashboard</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <title>HOMA Health Care - Phase 3 Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -20,19 +19,14 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         
         .header {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
             text-align: center;
+            color: white;
             margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
         
         .header h1 {
@@ -45,243 +39,156 @@
             opacity: 0.9;
         }
         
-        .stats-grid {
+        .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
         
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 25px;
+        .card {
+            background: white;
             border-radius: 15px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
         }
         
-        .stat-card:hover {
+        .card:hover {
             transform: translateY(-5px);
         }
         
-        .stat-card h3 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #4CAF50;
-        }
-        
-        .stat-card p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
-        .controls {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-        
-        .refresh-btn {
-            background: #4CAF50;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 15px;
-            transition: background 0.3s;
-        }
-        
-        .refresh-btn:hover {
-            background: #45a049;
-        }
-        
-        .filter-select {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-right: 10px;
-        }
-        
-        .patients-section {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-        
-        .section-header {
-            color: white;
+        .card h2 {
+            color: #333;
             margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
         }
         
-        .patients-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
+        .form-group {
+            margin-bottom: 20px;
         }
         
-        .patient-card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 12px;
-            color: #333;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
             transition: transform 0.3s ease;
+            width: 100%;
         }
         
-        .patient-card:hover {
-            transform: translateY(-3px);
+        .btn:hover {
+            transform: translateY(-2px);
         }
         
-        .patient-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
         
-        .patient-name {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        .status-active {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .status-paused {
-            background: #ff9800;
-            color: white;
-        }
-        
-        .status-completed {
-            background: #2196F3;
-            color: white;
-        }
-        
-        .patient-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .info-item {
-            font-size: 14px;
-        }
-        
-        .info-label {
-            font-weight: 600;
-            color: #666;
-        }
-        
-        .progress-section {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-        
-        .progress-bar {
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 10px;
-            margin: 10px 0;
-        }
-        
-        .progress-fill {
-            background: linear-gradient(90deg, #4CAF50, #45a049);
-            height: 100%;
-            transition: width 0.3s ease;
-            position: relative;
-        }
-        
-        .progress-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: #4CAF50;
-        }
-        
-        .loading {
-            text-align: center;
-            color: white;
-            font-size: 18px;
-            padding: 40px;
-        }
-        
-        .error {
-            background: rgba(244, 67, 54, 0.9);
-            color: white;
+        .status {
+            margin-top: 20px;
             padding: 15px;
             border-radius: 8px;
-            margin: 20px 0;
+            font-weight: 600;
         }
         
-        .empty-state {
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .health-info {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .health-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .health-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric {
             text-align: center;
-            color: white;
-            padding: 40px;
-            font-size: 18px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
         
-        .milestone-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 5px;
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
         }
         
-        .milestone-reached {
-            background: #4CAF50;
-        }
-        
-        .milestone-pending {
-            background: #ddd;
+        .metric-label {
+            color: #666;
+            margin-top: 5px;
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
+            .dashboard {
+                grid-template-columns: 1fr;
             }
             
             .header h1 {
                 font-size: 2em;
             }
             
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-            
-            .patients-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .patient-info {
-                grid-template-columns: 1fr;
+            .card {
+                padding: 20px;
             }
         }
     </style>
@@ -289,278 +196,263 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏥 Homa Health Care</h1>
-            <h2>Diabetes Program Dashboard</h2>
-            <p>Real-time monitoring of 90-day diabetes management program</p>
+            <h1>🏥 HOMA Health Care</h1>
+            <p>Phase 3: Google Fit Integration Dashboard</p>
         </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3 id="totalPatients">0</h3>
-                <p>Total Patients</p>
+        
+        <div class="dashboard">
+            <!-- Patient Registration Form -->
+            <div class="card">
+                <h2>👥 Register New Patient</h2>
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" name="age" min="1" max="120">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diabetesType">Diabetes Type</label>
+                        <select id="diabetesType" name="diabetesType">
+                            <option value="">Select Type</option>
+                            <option value="Type 1">Type 1</option>
+                            <option value="Type 2">Type 2</option>
+                            <option value="Gestational">Gestational</option>
+                            <option value="Prediabetes">Prediabetes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diagnosisDate">Diagnosis Date</label>
+                        <input type="date" id="diagnosisDate" name="diagnosis_date">
+                    </div>
+                    
+                    <button type="submit" class="btn" id="registerBtn">
+                        Register Patient
+                    </button>
+                    
+                    <div id="registrationStatus"></div>
+                </form>
             </div>
-            <div class="stat-card">
-                <h3 id="activePatients">0</h3>
-                <p>Active in Program</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="completedPrograms">0</h3>
-                <p>Completed Programs</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="avgProgress">0%</h3>
-                <p>Average Progress</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="recentEnrollments">0</h3>
-                <p>This Week</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="upcomingMilestones">0</h3>
-                <p>Upcoming Milestones</p>
+            
+            <!-- System Status -->
+            <div class="card">
+                <h2>⚡ System Status</h2>
+                <div id="systemStatus">
+                    <p>Loading system status...</p>
+                </div>
+                
+                <button class="btn" onclick="checkSystemHealth()" style="margin-top: 20px;">
+                    🔄 Refresh Status
+                </button>
             </div>
         </div>
-
-        <div class="controls">
-            <button onclick="loadDashboard()" class="refresh-btn">🔄 Refresh Data</button>
-            <select id="statusFilter" class="filter-select" onchange="filterPatients()">
-                <option value="all">All Patients</option>
-                <option value="active">Active Only</option>
-                <option value="completed">Completed</option>
-                <option value="paused">Paused</option>
-            </select>
-            <select id="sortBy" class="filter-select" onchange="sortPatients()">
-                <option value="recent">Recent First</option>
-                <option value="progress">By Progress</option>
-                <option value="name">By Name</option>
-            </select>
-        </div>
-
-        <div class="patients-section">
-            <div class="section-header">
-                <h2>📊 Patient Progress Monitoring</h2>
-                <span id="patientCount" style="opacity: 0.8;">Loading...</span>
-            </div>
-            <div id="patientsContainer">
-                <div class="loading">🔄 Loading patient data...</div>
+        
+        <!-- Patient Health Data Section -->
+        <div class="health-info" id="healthDataSection" style="display: none;">
+            <h3>📊 Latest Patient Health Data</h3>
+            <div id="healthData">
+                <p>No health data available yet.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'https://oztndjdowoewkbeznjvd.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96dG5kamRvd29ld2tiZXpuanZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwODkyMzksImV4cCI6MjA3MDY2NTIzOX0.yr6CC6zdXFzGOmwHARJwWlSaAmwOWH1VnvcODtdNwAc'
-        
-        let supabase;
-        let allPatients = []
-        let filteredPatients = []
-
-        // Initialize Supabase
-        function initializeSupabase() {
-            if (typeof window.supabase === 'undefined') {
-                setTimeout(initializeSupabase, 100);
-                return;
-            }
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Dashboard Supabase initialized');
-            loadDashboard();
-        }
-
-        async function loadDashboard() {
-            try {
-                showLoading()
-                
-                const { data: patients, error } = await supabase
-                    .from('patients')
-                    .select('*')
-                    .order('enrollment_date', { ascending: false })
-
-                if (error) {
-                    throw error
-                }
-
-                allPatients = patients || []
-                filteredPatients = [...allPatients]
-                
-                updateStats()
-                displayPatients()
-                
-                console.log('✅ Dashboard loaded successfully', patients?.length || 0, 'patients')
-
-            } catch (error) {
-                console.error('❌ Dashboard load error:', error)
-                showError('Error loading dashboard: ' + error.message)
-            }
-        }
-
-        function updateStats() {
-            const total = allPatients.length
-            const active = allPatients.filter(p => p.program_status === 'active').length
-            const completed = allPatients.filter(p => p.program_status === 'completed').length
-            
-            // Calculate average progress
-            const activePatients = allPatients.filter(p => p.program_status === 'active')
-            const avgProgress = activePatients.length > 0 
-                ? Math.round(activePatients.reduce((sum, p) => sum + ((p.days_completed || 0) / (p.total_program_days || 90) * 100), 0) / activePatients.length)
-                : 0
-
-            // Count recent enrollments (last 7 days)
-            const weekAgo = new Date()
-            weekAgo.setDate(weekAgo.getDate() - 7)
-            const recentCount = allPatients.filter(p => 
-                p.enrollment_date && new Date(p.enrollment_date) > weekAgo
-            ).length
-
-            // Count upcoming milestones (patients near milestone days)
-            const upcomingMilestones = activePatients.filter(p => {
-                const days = p.days_completed || 0
-                return [6, 13, 29, 44, 59, 74, 89].some(milestone => days >= milestone - 2 && days <= milestone)
-            }).length
-
-            // Update DOM
-            document.getElementById('totalPatients').textContent = total
-            document.getElementById('activePatients').textContent = active
-            document.getElementById('completedPrograms').textContent = completed
-            document.getElementById('avgProgress').textContent = avgProgress + '%'
-            document.getElementById('recentEnrollments').textContent = recentCount
-            document.getElementById('upcomingMilestones').textContent = upcomingMilestones
-        }
-
-        function displayPatients() {
-            const container = document.getElementById('patientsContainer')
-            const countElement = document.getElementById('patientCount')
-            
-            if (filteredPatients.length === 0) {
-                container.innerHTML = '<div class="empty-state">No patients found matching current filters.</div>'
-                countElement.textContent = '0 patients'
-                return
-            }
-
-            countElement.textContent = `${filteredPatients.length} patient${filteredPatients.length !== 1 ? 's' : ''}`
-
-            const patientsHTML = filteredPatients.map(patient => {
-                const progress = Math.round(((patient.days_completed || 0) / (patient.total_program_days || 90)) * 100)
-                const statusClass = `status-${patient.program_status || 'active'}`
-                
-                // Calculate milestones
-                const milestones = [7, 14, 30, 45, 60, 75, 90]
-                const currentDay = patient.days_completed || 0
-                
-                return `
-                    <div class="patient-card">
-                        <div class="patient-header">
-                            <div class="patient-name">${patient.first_name || 'N/A'} ${patient.last_name || 'N/A'}</div>
-                            <span class="status-badge ${statusClass}">${patient.program_status || 'Active'}</span>
-                        </div>
-                        
-                        <div class="patient-info">
-                            <div class="info-item">
-                                <div class="info-label">📧 Email</div>
-                                <div>${patient.email || 'Not provided'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">📱 Phone</div>
-                                <div>${patient.phone || 'Not provided'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">🎂 Age</div>
-                                <div>${patient.age || 'Not specified'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">💊 Type</div>
-                                <div>${patient.diabetes_type || 'Not specified'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">📅 Enrolled</div>
-                                <div>${patient.enrollment_date ? new Date(patient.enrollment_date).toLocaleDateString() : 'Unknown'}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">🔔 Next Reminder</div>
-                                <div>${patient.next_reminder_date ? new Date(patient.next_reminder_date).toLocaleDateString() : 'Not set'}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="progress-section">
-                            <div class="progress-text">Progress: ${currentDay}/${patient.total_program_days || 90} days (${progress}%)</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${progress}%;"></div>
-                            </div>
-                            
-                            <div style="margin-top: 10px;">
-                                <strong>Milestones:</strong>
-                                ${milestones.map(milestone => `
-                                    <span class="milestone-indicator ${currentDay >= milestone ? 'milestone-reached' : 'milestone-pending'}" 
-                                          title="Day ${milestone} ${currentDay >= milestone ? '✅' : '⏳'}"></span>
-                                `).join('')}
-                            </div>
-                            
-                            ${patient.current_medications ? `
-                                <div style="margin-top: 10px; font-size: 14px;">
-                                    <strong>💊 Medications:</strong> ${patient.current_medications}
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `
-            }).join('')
-
-            container.innerHTML = `<div class="patients-grid">${patientsHTML}</div>`
-        }
-
-        function filterPatients() {
-            const filter = document.getElementById('statusFilter').value
-            
-            if (filter === 'all') {
-                filteredPatients = [...allPatients]
-            } else {
-                filteredPatients = allPatients.filter(p => p.program_status === filter)
-            }
-            
-            displayPatients()
-        }
-
-        function sortPatients() {
-            const sortBy = document.getElementById('sortBy').value
-            
-            filteredPatients.sort((a, b) => {
-                switch (sortBy) {
-                    case 'recent':
-                        return new Date(b.enrollment_date || 0) - new Date(a.enrollment_date || 0)
-                    case 'progress':
-                        return (b.days_completed || 0) - (a.days_completed || 0)
-                    case 'name':
-                        const nameA = `${a.first_name || ''} ${a.last_name || ''}`.trim()
-                        const nameB = `${b.first_name || ''} ${b.last_name || ''}`.trim()
-                        return nameA.localeCompare(nameB)
-                    default:
-                        return 0
-                }
-            })
-            
-            displayPatients()
-        }
-
-        function showLoading() {
-            document.getElementById('patientsContainer').innerHTML = '<div class="loading">🔄 Loading patient data...</div>'
-        }
-
-        function showError(message) {
-            document.getElementById('patientsContainer').innerHTML = `<div class="error">❌ ${message}</div>`
-        }
-
-        // Initialize dashboard
+        // Check system health on page load
         document.addEventListener('DOMContentLoaded', function() {
-            initializeSupabase()
-            
-            // Auto-refresh every 30 seconds
-            setInterval(loadDashboard, 30000)
-            
-            console.log('🏥 Diabetes Program Dashboard Initialized')
-        })
+            checkSystemHealth();
+        });
 
-        // Export function for external use
-        window.refreshDashboard = loadDashboard
+        // System health check
+        async function checkSystemHealth() {
+            const statusDiv = document.getElementById('systemStatus');
+            statusDiv.innerHTML = '<p>🔄 Checking system status...</p>';
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    statusDiv.innerHTML = `
+                        <div class="status success">
+                            <strong>✅ System Healthy</strong><br>
+                            Server: ${data.service}<br>
+                            Port: ${data.port}<br>
+                            Supabase: ${data.supabase}<br>
+                            Google Fit: ${data.googleFit}<br>
+                            Last Check: ${new Date(data.timestamp).toLocaleString()}
+                        </div>
+                    `;
+                } else {
+                    throw new Error('System not healthy');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ System Error</strong><br>
+                        Cannot connect to server.<br>
+                        Please ensure server is running on port 3023.
+                    </div>
+                `;
+            }
+        }
+
+        // Patient registration form
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('registerBtn');
+            const statusDiv = document.getElementById('registrationStatus');
+            
+            // Disable button and show loading
+            btn.disabled = true;
+            btn.textContent = 'Registering...';
+            statusDiv.innerHTML = '<div class="status loading">Processing registration...</div>';
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            
+            try {
+                const response = await fetch('/api/register-patient', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDiv.innerHTML = `
+                        <div class="status success">
+                            <strong>✅ Registration Successful!</strong><br>
+                            Patient: ${result.patient.name}<br>
+                            ID: ${result.patient.id}<br>
+                            <br>
+                            <button class="btn" onclick="connectGoogleFit('${result.patient.id}')" style="width: auto; padding: 10px 20px; margin-top: 10px;">
+                                🔗 Connect Google Fit
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Reset form
+                    this.reset();
+                } else {
+                    throw new Error(result.error || 'Registration failed');
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ Registration Failed</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            } finally {
+                // Re-enable button
+                btn.disabled = false;
+                btn.textContent = 'Register Patient';
+            }
+        });
+
+        // Connect Google Fit
+        async function connectGoogleFit(patientId) {
+            try {
+                const response = await fetch(`/api/connect-google-fit/${patientId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Open Google OAuth in new window
+                    const authWindow = window.open(
+                        result.authUrl, 
+                        'googleFitAuth', 
+                        'width=500,height=600,scrollbars=yes,resizable=yes'
+                    );
+                    
+                    // Check if window closed (user completed auth)
+                    const checkClosed = setInterval(() => {
+                        if (authWindow.closed) {
+                            clearInterval(checkClosed);
+                            alert('Google Fit connection completed! You can now view health data.');
+                            checkSystemHealth(); // Refresh status
+                        }
+                    }, 1000);
+                    
+                } else {
+                    alert('Error: ' + result.error);
+                }
+                
+            } catch (error) {
+                alert('Error connecting Google Fit: ' + error.message);
+            }
+        }
+
+        // View patient health data
+        async function viewHealthData(patientId) {
+            const healthSection = document.getElementById('healthDataSection');
+            const healthData = document.getElementById('healthData');
+            
+            healthSection.style.display = 'block';
+            healthData.innerHTML = '<p>🔄 Loading health data...</p>';
+            
+            try {
+                const response = await fetch(`/api/patient/${patientId}/health-data`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    healthData.innerHTML = `
+                        <div class="health-metrics">
+                            <div class="metric">
+                                <div class="metric-value">${data.steps?.length || 0}</div>
+                                <div class="metric-label">Days of Step Data</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">${data.heartRate?.length || 0}</div>
+                                <div class="metric-label">Days of Heart Rate Data</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">${data.weight?.length || 0}</div>
+                                <div class="metric-label">Days of Weight Data</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 20px; color: #666;">
+                            Data range: ${new Date(result.dateRange.start).toLocaleDateString()} - 
+                            ${new Date(result.dateRange.end).toLocaleDateString()}
+                        </p>
+                    `;
+                } else {
+                    throw new Error(result.error);
+                }
+                
+            } catch (error) {
+                healthData.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ Error Loading Health Data</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
     </script>
 </body>
 </html>

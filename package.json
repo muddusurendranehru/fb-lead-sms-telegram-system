@@ -1,48 +1,43 @@
 {
-  "name": "homa-healthcare-lead-automation",
+  "name": "homa-health-care-phase3",
   "version": "1.0.0",
-  "description": "HOMA Healthcare - Facebook Lead Capture with SMS & Telegram Automation for Diabetes Clinic",
-  "main": "index.js",
+  "description": "HOMA Health Care Google Fit Integration - Phase 3 diabetes platform with health tracking for 35+ patients",
+  "main": "server-phase3.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "build": "npm install",
-    "test": "echo \"No tests specified\" && exit 0"
+    "start": "node server-phase3.js",
+    "dev": "node server-phase3.js",
+    "test": "node -e \"console.log('Server test - checking syntax...')\" && node -c server-phase3.js && echo \"✅ Syntax OK\"",
+    "health": "curl http://localhost:3023/api/health || echo \"❌ Server not running\"",
+    "install-deps": "npm install express cors googleapis @supabase/supabase-js dotenv"
   },
   "keywords": [
-    "healthcare",
     "diabetes",
-    "facebook-leads",
-    "sms-automation",
-    "telegram-bot",
-    "patient-management",
-    "medical-clinic",
-    "lead-capture"
+    "health-tracking",
+    "google-fit",
+    "supabase",
+    "healthcare",
+    "nodejs",
+    "express"
   ],
-  "author": "Dr. Nehru's Healthcare Clinic",
+  "author": "HOMA Health Care Team",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "@supabase/supabase-js": "^2.55.0",
     "cors": "^2.8.5",
-    "body-parser": "^1.20.2",
-    "dotenv": "^16.3.1",
-    "@supabase/supabase-js": "^2.38.4",
-    "node-telegram-bot-api": "^0.63.0",
-    "twilio": "^4.19.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "googleapis": "^118.0.0"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=16.0.0",
     "npm": ">=8.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/muddusurendranehru/fb-lead-sms-telegram-system.git"
+    "url": "https://github.com/muddusurendranehru/fb-lead-sms-telegram-system"
   },
-  "bugs": {
-    "url": "https://github.com/muddusurendranehru/fb-lead-sms-telegram-system/issues"
-  },
-  "homepage": "https://github.com/muddusurendranehru/fb-lead-sms-telegram-system#readme"
+  "config": {
+    "port": 3023,
+    "host": "localhost"
+  }
 }
