@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOMA Healthcare - Free Consultation</title>
+    <title>Homa Health Care - Lead Capture & Diabetes Program</title>
+    
+    <!-- Supabase Library -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <style>
         * {
             margin: 0;
@@ -12,49 +16,64 @@
         }
         
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
         }
         
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 100%;
-            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
         
         .header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 30px;
             text-align: center;
+            color: white;
+            margin-bottom: 40px;
         }
         
         .header h1 {
-            font-size: 24px;
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
         
         .header p {
+            font-size: 1.2em;
             opacity: 0.9;
         }
         
-        .doctor-info {
-            background: rgba(255,255,255,0.1);
-            margin: 15px 0;
-            padding: 15px;
-            border-radius: 10px;
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
         }
         
         .form-container {
+            background: rgba(255, 255, 255, 0.95);
             padding: 30px;
+            border-radius: 15px;
+            color: #333;
+            margin-bottom: 30px;
         }
         
         .form-group {
@@ -65,135 +84,112 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #555;
         }
         
-        input {
+        input, select, textarea {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s;
         }
         
-        input:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #4CAF50;
         }
         
-        .phone-input {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .country-code {
-            width: 70px;
-            background: #f5f5f5;
-            color: #666;
-            font-weight: bold;
-        }
-        
         .submit-btn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
-            padding: 18px;
+            padding: 15px 30px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.2s;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
         
         .submit-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
         }
         
         .submit-btn:disabled {
-            background: #ccc;
+            background: #cccccc;
             cursor: not-allowed;
             transform: none;
         }
         
         .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
             display: none;
+            animation: slideIn 0.5s ease;
         }
         
         .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4CAF50;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .features {
-            background: #f8f9fa;
-            padding: 20px;
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
             margin-top: 20px;
+            display: none;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .footer-links {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            transition: background 0.3s;
+        }
+        
+        .footer-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .diabetes-enhancement {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            color: white;
             text-align: center;
         }
         
-        .features h3 {
-            color: #4CAF50;
-            margin-bottom: 10px;
-        }
-        
-        .feature-list {
-            display: flex;
-            justify-content: space-around;
-            font-size: 14px;
-        }
-        
-        .feature-item::before {
-            content: "✅ ";
-        }
-        
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .container {
+                padding: 20px;
                 margin: 10px;
             }
             
-            .header {
-                padding: 20px;
+            .header h1 {
+                font-size: 2em;
             }
             
-            .form-container {
-                padding: 20px;
-            }
-            
-            .feature-list {
-                flex-direction: column;
-                gap: 5px;
+            .features {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -201,146 +197,222 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏥 HOMA Healthcare</h1>
-            <p>Free Diabetes Consultation</p>
-            <div class="doctor-info">
-                <h3>👨‍⚕️ Dr. Nehru</h3>
-                <p>Diabetes Specialist • 15+ Years</p>
+            <h1>🏥 Homa Health Care</h1>
+            <p>Advanced Lead Capture & Diabetes Management Program</p>
+        </div>
+
+        <div class="diabetes-enhancement">
+            <h3>🎯 Enhanced with 90-Day Diabetes Program</h3>
+            <p>Every submission automatically enrolls patients in our comprehensive diabetes management program with daily reminders, progress tracking, and personalized care.</p>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>📱 SMS Alerts</h3>
+                <p>Instant SMS notifications via Twilio</p>
+            </div>
+            <div class="feature">
+                <h3>💬 Telegram</h3>
+                <p>Real-time staff notifications</p>
+            </div>
+            <div class="feature">
+                <h3>📞 WhatsApp</h3>
+                <p>WhatsApp integration for leads</p>
+            </div>
+            <div class="feature">
+                <h3>🏥 Diabetes Program</h3>
+                <p>90-day health management</p>
             </div>
         </div>
-        
+
         <div class="form-container">
-            <div class="success-message" id="successMessage">
-                <h3>✅ Success!</h3>
-                <p>Dr. Nehru will call you within 30 minutes.</p>
-                <p><strong>Check your SMS and WhatsApp!</strong></p>
-            </div>
+            <h2 style="margin-bottom: 20px; color: #333; text-align: center;">📋 Patient Information & Lead Capture</h2>
             
-            <div class="error-message" id="errorMessage">
-                <h3>❌ Error</h3>
-                <p id="errorText">Please try again.</p>
-            </div>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Registering...</p>
-            </div>
-            
-            <form id="patientForm">
+            <form id="leadCaptureForm">
                 <div class="form-group">
-                    <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" required placeholder="Enter your name">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter patient's full name">
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="phone">Mobile Number</label>
-                    <div class="phone-input">
-                        <input type="text" class="country-code" value="+91" readonly>
-                        <input type="tel" id="phone" name="phone" required placeholder="9876543210" maxlength="10">
-                    </div>
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="patient@example.com">
                 </div>
-                
+
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="+1 (555) 123-4567">
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" min="18" max="120" placeholder="35">
+                </div>
+
+                <div class="form-group">
+                    <label for="diabetes_type">Diabetes Type</label>
+                    <select id="diabetes_type" name="diabetes_type">
+                        <option value="">Select type (optional)</option>
+                        <option value="type1">Type 1 Diabetes</option>
+                        <option value="type2">Type 2 Diabetes</option>
+                        <option value="prediabetes">Prediabetes</option>
+                        <option value="gestational">Gestational Diabetes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="medications">Current Medications</label>
+                    <textarea id="medications" name="medications" rows="3" 
+                        placeholder="List current diabetes medications (e.g., Metformin, Insulin, etc.)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="source">How did you hear about us?</label>
+                    <select id="source" name="source">
+                        <option value="">Select source</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="google">Google Search</option>
+                        <option value="referral">Friend/Family Referral</option>
+                        <option value="doctor">Doctor Recommendation</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" name="notes" rows="2" 
+                        placeholder="Any additional information or specific concerns..."></textarea>
+                </div>
+
                 <button type="submit" class="submit-btn" id="submitBtn">
-                    📞 Get Free Call
+                    🚀 Submit & Enroll in Diabetes Program
                 </button>
             </form>
-            
-            <div class="features">
-                <h3>What You Get</h3>
-                <div class="feature-list">
-                    <div class="feature-item">Free Consultation</div>
-                    <div class="feature-item">Expert Care</div>
-                    <div class="feature-item">WhatsApp Updates</div>
-                </div>
-            </div>
+
+            <div class="success-message" id="successMessage"></div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <div class="footer-links">
+            <a href="diabetes-dashboard.html" target="_blank">📊 View Dashboard</a>
+            <a href="#" onclick="testConnection()">🧪 Test Connection</a>
         </div>
     </div>
 
     <script>
-        document.getElementById('patientForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://oztndjdowoewkbeznjvd.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96dG5kamRvd29ld2tiZXpuanZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwODkyMzksImV4cCI6MjA3MDY2NTIzOX0.yr6CC6zdXFzGOmwHARJwWlSaAmwOWH1VnvcODtdNwAc'
+        
+        let supabase;
+        
+        // Wait for Supabase to load
+        function initializeSupabase() {
+            if (typeof window.supabase === 'undefined') {
+                setTimeout(initializeSupabase, 100);
+                return;
+            }
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabase initialized');
+        }
+
+        // Form submission handler
+        document.getElementById('leadCaptureForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
             
+            const form = event.target;
+            const formData = new FormData(form);
             const submitBtn = document.getElementById('submitBtn');
-            const loading = document.getElementById('loading');
-            const successMessage = document.getElementById('successMessage');
-            const errorMessage = document.getElementById('errorMessage');
+            const originalText = submitBtn.textContent;
             
-            // Hide messages
-            successMessage.style.display = 'none';
-            errorMessage.style.display = 'none';
-            
-            // Show loading
-            loading.style.display = 'block';
+            // Show loading state
+            submitBtn.textContent = '⏳ Processing...';
             submitBtn.disabled = true;
             
-            // Get data
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            
-            // Validate phone
-            if (data.phone.length !== 10 || !/^\d{10}$/.test(data.phone)) {
-                loading.style.display = 'none';
-                errorMessage.style.display = 'block';
-                document.getElementById('errorText').textContent = 'Enter valid 10-digit mobile number';
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            // Validate name
-            if (!data.name || data.name.trim().length < 2) {
-                loading.style.display = 'none';
-                errorMessage.style.display = 'block';
-                document.getElementById('errorText').textContent = 'Enter your name';
-                submitBtn.disabled = false;
-                return;
-            }
-            
             try {
+                // Collect form data
+                const leadData = {};
+                for (let [key, value] of formData.entries()) {
+                    leadData[key] = value;
+                }
+                
+                console.log('📝 Form submitted:', leadData);
+                
+                // Submit via API
                 const response = await fetch('/api/register-patient', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(leadData)
                 });
                 
                 const result = await response.json();
                 
-                loading.style.display = 'none';
-                
                 if (result.success) {
-                    successMessage.style.display = 'block';
-                    e.target.reset();
-                    successMessage.scrollIntoView({ behavior: 'smooth' });
-                    
-                    // Update message based on what was sent
-                    if (result.whatsapp && result.sms) {
-                        successMessage.innerHTML = `
-                            <h3>✅ Success!</h3>
-                            <p>Dr. Nehru will call you within 30 minutes.</p>
-                            <p><strong>✅ SMS Sent ✅ WhatsApp Sent</strong></p>
-                        `;
-                    } else if (result.sms) {
-                        successMessage.innerHTML = `
-                            <h3>✅ Success!</h3>
-                            <p>Dr. Nehru will call you within 30 minutes.</p>
-                            <p><strong>✅ SMS Sent</strong></p>
-                        `;
-                    }
+                    showSuccessMessage(leadData, result.patient);
+                    form.reset();
                 } else {
-                    errorMessage.style.display = 'block';
-                    document.getElementById('errorText').textContent = result.error || 'Registration failed';
+                    throw new Error(result.error || 'Registration failed');
                 }
+                
             } catch (error) {
-                loading.style.display = 'none';
-                errorMessage.style.display = 'block';
-                document.getElementById('errorText').textContent = 'Network error. Try again.';
+                console.error('Submission error:', error);
+                showErrorMessage('Registration failed: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
-            
-            submitBtn.disabled = false;
         });
         
-        // Phone validation
-        document.getElementById('phone').addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/\D/g, '');
+        function showSuccessMessage(leadData, patient) {
+            const successDiv = document.getElementById('successMessage');
+            const message = `
+                🎉 <strong>Success! Lead Captured & Patient Enrolled</strong><br><br>
+                ✅ <strong>${leadData.name}</strong> has been successfully registered<br>
+                🏥 <strong>Patient ID:</strong> ${patient.id.substr(0, 8)}...<br>
+                📊 <strong>Enrolled in 90-day diabetes program</strong><br>
+                📱 Staff notifications sent<br><br>
+                📊 Check the dashboard to view patient progress!
+            `;
+            successDiv.innerHTML = message;
+            successDiv.style.display = 'block';
+            
+            // Hide after 10 seconds
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 10000);
+        }
+        
+        function showErrorMessage(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = '❌ ' + message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Test connection function
+        window.testConnection = async function() {
+            try {
+                const response = await fetch('/health');
+                const result = await response.json();
+                if (result.status === 'healthy') {
+                    alert('✅ Connection successful! System is healthy.');
+                } else {
+                    alert('⚠️ Connection issue detected.');
+                }
+            } catch (error) {
+                alert('❌ Connection failed: ' + error.message);
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSupabase();
+            console.log('🚀 Enhanced Lead Capture System Loaded');
         });
     </script>
 </body>
